@@ -1,9 +1,12 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/valyala/fasthttp"
 )
 
 func main() {
@@ -24,7 +27,15 @@ func command(ss []string, w io.Writer) (int, error) {
 		return 0, err
 	}
 
-	c, err := newChecker(args.URL, checkerOptions{
+	h := &fasthttp.Client{
+		MaxConnsPerHost: args.Concurrency,
+		ReadBufferSize:  args.BufferSize,
+		TLSConfig: &tls.Config{
+			InsecureSkipVerify: args.SkipTLSVerification,
+		},
+	}
+
+	c, err := newChecker(args.URL, h, checkerOptions{
 		fetcherOptions{
 			args.Concurrency,
 			args.ExcludedPatterns,
@@ -35,11 +46,9 @@ func command(ss []string, w io.Writer) (int, error) {
 			args.Timeout,
 			args.OnePageOnly,
 		},
-		args.BufferSize,
 		args.FollowRobotsTxt,
 		args.FollowSitemapXML,
 		args.FollowURLParams,
-		args.SkipTLSVerification,
 	})
 
 	if err != nil {

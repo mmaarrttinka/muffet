@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"errors"
 	"sync"
 
@@ -17,16 +16,9 @@ type checker struct {
 	donePages    concurrentStringSet
 }
 
-func newChecker(s string, o checkerOptions) (checker, error) {
+func newChecker(s string, c *fasthttp.Client, o checkerOptions) (checker, error) {
 	o.Initialize()
 
-	c := &fasthttp.Client{
-		MaxConnsPerHost: o.Concurrency,
-		ReadBufferSize:  o.BufferSize,
-		TLSConfig: &tls.Config{
-			InsecureSkipVerify: o.SkipTLSVerification,
-		},
-	}
 	f := newFetcher(c, o.fetcherOptions)
 	r, err := f.Fetch(s)
 

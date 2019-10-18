@@ -6,33 +6,34 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/valyala/fasthttp"
 )
 
 func TestNewChecker(t *testing.T) {
-	_, err := newChecker(rootURL, checkerOptions{})
+	_, err := newChecker(rootURL, &fasthttp.Client{}, checkerOptions{})
 	assert.Nil(t, err)
 }
 
 func TestNewCheckerError(t *testing.T) {
 	for _, s := range []string{":", invalidBaseURL} {
-		_, err := newChecker(s, checkerOptions{})
+		_, err := newChecker(s, &fasthttp.Client{}, checkerOptions{})
 		assert.NotNil(t, err)
 	}
 }
 
 func TestNewCheckerWithNonHTMLPage(t *testing.T) {
-	_, err := newChecker(robotsTxtURL, checkerOptions{})
+	_, err := newChecker(robotsTxtURL, &fasthttp.Client{}, checkerOptions{})
 	assert.Equal(t, "non-HTML page", err.Error())
 }
 
 func TestNewCheckerWithMissingSitemapXML(t *testing.T) {
-	_, err := newChecker(missingMetadataURL, checkerOptions{FollowSitemapXML: true})
+	_, err := newChecker(missingMetadataURL, &fasthttp.Client{}, checkerOptions{FollowSitemapXML: true})
 	assert.Equal(t, "sitemap not found", err.Error())
 }
 
 func TestCheckerCheck(t *testing.T) {
 	for _, s := range []string{rootURL, fragmentURL, baseURL, redirectURL} {
-		c, err := newChecker(s, checkerOptions{})
+		c, err := newChecker(s, &fasthttp.Client{}, checkerOptions{})
 		assert.Nil(t, err)
 
 		go c.Check()
@@ -44,7 +45,7 @@ func TestCheckerCheck(t *testing.T) {
 }
 
 func TestCheckerCheckMultiplePages(t *testing.T) {
-	c, _ := newChecker(rootURL, checkerOptions{})
+	c, _ := newChecker(rootURL, &fasthttp.Client{}, checkerOptions{})
 
 	go c.Check()
 
@@ -58,7 +59,7 @@ func TestCheckerCheckMultiplePages(t *testing.T) {
 }
 
 func TestCheckerCheckPage(t *testing.T) {
-	c, _ := newChecker(rootURL, checkerOptions{})
+	c, _ := newChecker(rootURL, &fasthttp.Client{}, checkerOptions{})
 
 	r, err := c.fetcher.Fetch(existentURL)
 	assert.Nil(t, err)
@@ -75,7 +76,7 @@ func TestCheckerCheckWithExcludedURLs(t *testing.T) {
 	r, err := regexp.Compile("bar")
 	assert.Nil(t, err)
 
-	c, _ := newChecker(erroneousURL, checkerOptions{
+	c, _ := newChecker(erroneousURL, &fasthttp.Client{}, checkerOptions{
 		fetcherOptions: fetcherOptions{ExcludedPatterns: []*regexp.Regexp{r}},
 	})
 
@@ -86,7 +87,7 @@ func TestCheckerCheckWithExcludedURLs(t *testing.T) {
 
 func TestCheckerCheckPageError(t *testing.T) {
 	for _, s := range []string{erroneousURL} {
-		c, _ := newChecker(rootURL, checkerOptions{})
+		c, _ := newChecker(rootURL, &fasthttp.Client{}, checkerOptions{})
 
 		r, err := c.fetcher.Fetch(s)
 		assert.Nil(t, err)
