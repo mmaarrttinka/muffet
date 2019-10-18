@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/fatih/color"
+	"github.com/raviqqe/muffet/util"
 	"github.com/valyala/fasthttp"
 )
 
@@ -100,23 +101,17 @@ func (c Checker) checkPage(p *page) {
 
 	w.Wait()
 
-	c.results <- newPageResult(p.URL().String(), stringChannelToSlice(sc), stringChannelToSlice(ec))
+	c.results <- newPageResult(
+		p.URL().String(),
+		util.StringChannelToSlice(sc),
+		util.StringChannelToSlice(ec),
+	)
 }
 
 func (c Checker) addPage(p *page) {
 	if !c.donePages.Add(p.URL().String()) {
 		c.daemons.Add(func() { c.checkPage(p) })
 	}
-}
-
-func stringChannelToSlice(sc <-chan string) []string {
-	ss := make([]string, 0, len(sc))
-
-	for i := 0; i < cap(ss); i++ {
-		ss = append(ss, <-sc)
-	}
-
-	return ss
 }
 
 func formatLinkSuccess(u string, s int) string {
