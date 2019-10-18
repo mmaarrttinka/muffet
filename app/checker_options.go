@@ -1,7 +1,7 @@
-package main
+package app
 
-type checkerOptions struct {
-	fetcherOptions
+type CheckerOptions struct {
+	FetcherOptions
 	FollowRobotsTxt,
 	FollowSitemapXML,
 	FollowURLParams bool

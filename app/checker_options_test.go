@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"testing"
@@ -7,8 +7,8 @@ import (
 )
 
 func TestCheckerOptionsInitialize(t *testing.T) {
-	o := checkerOptions{}
+	o := CheckerOptions{}
 	o.Initialize()
 
-	assert.Equal(t, defaultConcurrency, o.Concurrency)
+	assert.Equal(t, DefaultConcurrency, o.Concurrency)
 }

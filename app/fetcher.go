@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"bytes"
@@ -16,11 +16,11 @@ type fetcher struct {
 	client              *fasthttp.Client
 	connectionSemaphore semaphore
 	cache               cache
-	options             fetcherOptions
+	options             FetcherOptions
 	scraper
 }
 
-func newFetcher(c *fasthttp.Client, o fetcherOptions) fetcher {
+func newFetcher(c *fasthttp.Client, o FetcherOptions) fetcher {
 	o.Initialize()
 
 	return fetcher{

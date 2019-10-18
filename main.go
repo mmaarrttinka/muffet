@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/raviqqe/muffet/app"
 	"github.com/valyala/fasthttp"
 )
 
@@ -35,20 +36,20 @@ func command(ss []string, w io.Writer) (int, error) {
 		},
 	}
 
-	c, err := newChecker(args.URL, h, checkerOptions{
-		fetcherOptions{
-			args.Concurrency,
-			args.ExcludedPatterns,
-			args.Headers,
-			args.IgnoreFragments,
-			args.FollowURLParams,
-			args.MaxRedirections,
-			args.Timeout,
-			args.OnePageOnly,
+	c, err := app.NewChecker(args.URL, h, app.CheckerOptions{
+		FetcherOptions: app.FetcherOptions{
+			Concurrency:      args.Concurrency,
+			ExcludedPatterns: args.ExcludedPatterns,
+			Headers:          args.Headers,
+			IgnoreFragments:  args.IgnoreFragments,
+			FollowURLParams:  args.FollowURLParams,
+			MaxRedirections:  args.MaxRedirections,
+			Timeout:          args.Timeout,
+			OnePageOnly:      args.OnePageOnly,
 		},
-		args.FollowRobotsTxt,
-		args.FollowSitemapXML,
-		args.FollowURLParams,
+		FollowRobotsTxt:  args.FollowRobotsTxt,
+		FollowSitemapXML: args.FollowSitemapXML,
+		FollowURLParams:  args.FollowURLParams,
 	})
 
 	if err != nil {

@@ -1,4 +1,4 @@
-package main
+package app
 
 type semaphore struct {
 	channel chan bool

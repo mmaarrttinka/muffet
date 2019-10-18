@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"errors"
@@ -8,7 +8,8 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-type checker struct {
+// Checker checks linkes in pages.
+type Checker struct {
 	fetcher
 	daemons      daemons
 	urlInspector urlInspector
@@ -16,29 +17,30 @@ type checker struct {
 	donePages    donePageSet
 }
 
-func newChecker(s string, c *fasthttp.Client, o checkerOptions) (checker, error) {
+// NewChecker creates a new link checker.
+func NewChecker(s string, c *fasthttp.Client, o CheckerOptions) (Checker, error) {
 	o.Initialize()
 
-	f := newFetcher(c, o.fetcherOptions)
+	f := newFetcher(c, o.FetcherOptions)
 	r, err := f.Fetch(s)
 
 	if err != nil {
-		return checker{}, err
+		return Checker{}, err
 	}
 
 	p, ok := r.Page()
 
 	if !ok {
-		return checker{}, errors.New("non-HTML page")
+		return Checker{}, errors.New("non-HTML page")
 	}
 
 	ui, err := newURLInspector(c, p.URL().String(), o.FollowRobotsTxt, o.FollowSitemapXML)
 
 	if err != nil {
-		return checker{}, err
+		return Checker{}, err
 	}
 
-	ch := checker{
+	ch := Checker{
 		f,
 		newDaemons(o.Concurrency),
 		ui,
@@ -51,17 +53,17 @@ func newChecker(s string, c *fasthttp.Client, o checkerOptions) (checker, error)
 	return ch, nil
 }
 
-func (c checker) Results() <-chan pageResult {
+func (c Checker) Results() <-chan pageResult {
 	return c.results
 }
 
-func (c checker) Check() {
+func (c Checker) Check() {
 	c.daemons.Run()
 
 	close(c.results)
 }
 
-func (c checker) checkPage(p *page) {
+func (c Checker) checkPage(p *page) {
 	us := p.Links()
 
 	sc := make(chan string, len(us))
@@ -101,7 +103,7 @@ func (c checker) checkPage(p *page) {
 	c.results <- newPageResult(p.URL().String(), stringChannelToSlice(sc), stringChannelToSlice(ec))
 }
 
-func (c checker) addPage(p *page) {
+func (c Checker) addPage(p *page) {
 	if !c.donePages.Add(p.URL().String()) {
 		c.daemons.Add(func() { c.checkPage(p) })
 	}

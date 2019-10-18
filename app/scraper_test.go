@@ -1,10 +1,11 @@
-package main
+package app
 
 import (
 	"net/url"
 	"strings"
 	"testing"
 
+	"github.com/raviqqe/muffet/util"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/html"
 )
@@ -99,7 +100,7 @@ func TestScraperIsURLExcluded(t *testing.T) {
 			false,
 		},
 	} {
-		rs, err := compileRegexps(x.regexps)
+		rs, err := util.CompileRegexps(x.regexps)
 		assert.Nil(t, err)
 
 		assert.Equal(t, x.answer, newScraper(rs, false).isURLExcluded(x.url))

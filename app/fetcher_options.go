@@ -1,11 +1,11 @@
-package main
+package app
 
 import (
 	"regexp"
 	"time"
 )
 
-type fetcherOptions struct {
+type FetcherOptions struct {
 	Concurrency      int
 	ExcludedPatterns []*regexp.Regexp
 	Headers          map[string]string
@@ -16,16 +16,16 @@ type fetcherOptions struct {
 	OnePageOnly      bool
 }
 
-func (o *fetcherOptions) Initialize() {
+func (o *FetcherOptions) Initialize() {
 	if o.Concurrency <= 0 {
-		o.Concurrency = defaultConcurrency
+		o.Concurrency = DefaultConcurrency
 	}
 
 	if o.MaxRedirections <= 0 {
-		o.MaxRedirections = defaultMaxRedirections
+		o.MaxRedirections = DefaultMaxRedirections
 	}
 
 	if o.Timeout <= 0 {
-		o.Timeout = defaultTimeout
+		o.Timeout = DefaultTimeout
 	}
 }

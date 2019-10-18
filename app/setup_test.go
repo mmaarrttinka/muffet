@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"encoding/base64"
@@ -33,7 +33,6 @@ const (
 	infiniteRedirectURL = "http://localhost:8080/infinite-redirect"
 	invalidRedirectURL  = "http://localhost:8080/invalid-redirect"
 	timeoutURL          = "http://localhost:8080/timeout"
-	basicAuthURL        = "http://localhost:8080/basic-auth"
 	robotsTxtURL        = "http://localhost:8080/robots.txt"
 	missingMetadataURL  = "http://localhost:8081"
 	invalidRobotsTxtURL = "http://localhost:8082"

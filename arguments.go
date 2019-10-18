@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/docopt/docopt-go"
+	"github.com/raviqqe/muffet/app"
+	"github.com/raviqqe/muffet/util"
 )
 
 var usage = fmt.Sprintf(`Muffet, the web repairgirl
@@ -31,7 +33,11 @@ Options:
 	-t, --timeout <seconds>           Set timeout for HTTP requests in seconds. [default: %v]
 	-v, --verbose                     Show successful results too.
 	-x, --skip-tls-verification       Skip TLS certificates verification.`,
-	defaultBufferSize, defaultConcurrency, defaultMaxRedirections, defaultTimeout.Seconds())
+	app.DefaultBufferSize,
+	app.DefaultConcurrency,
+	app.DefaultMaxRedirections,
+	app.DefaultTimeout.Seconds(),
+)
 
 type arguments struct {
 	BufferSize       int
@@ -66,7 +72,7 @@ func getArguments(ss []string) (arguments, error) {
 	}
 
 	ss, _ = args["--exclude"].([]string)
-	rs, err := compileRegexps(ss)
+	rs, err := util.CompileRegexps(ss)
 
 	if err != nil {
 		return arguments{}, err
@@ -125,22 +131,6 @@ func parseArguments(u string, ss []string) map[string]interface{} {
 func parseInt(s string) (int, error) {
 	i, err := strconv.ParseInt(s, 10, 32)
 	return int(i), err
-}
-
-func compileRegexps(ss []string) ([]*regexp.Regexp, error) {
-	rs := make([]*regexp.Regexp, 0, len(ss))
-
-	for _, s := range ss {
-		r, err := regexp.Compile(s)
-
-		if err != nil {
-			return nil, err
-		}
-
-		rs = append(rs, r)
-	}
-
-	return rs, nil
 }
 
 func parseHeaders(ss []string) (map[string]string, error) {
