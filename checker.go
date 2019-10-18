@@ -13,7 +13,7 @@ type checker struct {
 	daemons      daemons
 	urlInspector urlInspector
 	results      chan pageResult
-	donePages    concurrentStringSet
+	donePages    donePageSet
 }
 
 func newChecker(s string, c *fasthttp.Client, o checkerOptions) (checker, error) {
@@ -43,7 +43,7 @@ func newChecker(s string, c *fasthttp.Client, o checkerOptions) (checker, error)
 		newDaemons(o.Concurrency),
 		ui,
 		make(chan pageResult, o.Concurrency),
-		newConcurrentStringSet(),
+		newDonePageSet(),
 	}
 
 	ch.addPage(p)
