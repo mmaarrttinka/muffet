@@ -1,5 +1,5 @@
 version: 2
-workflows:
+workflows:.yml fájlba.
   version: 2
   all:
     jobs:
